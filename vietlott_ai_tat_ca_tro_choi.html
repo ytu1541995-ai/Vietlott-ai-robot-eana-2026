@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#123c82">
+<title>Vietlott AI — Bảng điều khiển</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f6fb;color:#172033;font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+header{padding:22px 17px 24px;background:linear-gradient(135deg,#102a5c,#1762c5);color:#fff}main{max-width:880px;margin:auto;padding:14px}.eyebrow{font-size:12px;opacity:.85;letter-spacing:.1em;text-transform:uppercase}h1{font-size:29px;line-height:1.15;margin:7px 0}header p{margin:8px 0 0;color:#e2ecff}.card{background:white;border:1px solid #e0e7f0;border-radius:16px;padding:16px;margin-bottom:13px;box-shadow:0 3px 14px #142c4b08}h2{font-size:18px;margin:0 0 9px}.muted{color:#64748b;font-size:13px}.warn{padding:12px;background:#fff6df;border:1px solid #f1d68d;border-radius:12px;color:#725000;font-size:13px}.games{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.game{border:1px solid #dbe4f0;background:#fff;border-radius:12px;padding:12px;text-align:left;cursor:pointer;color:#172033}.game strong{display:block;font-size:15px}.game small{color:#64748b}.game.active{border:2px solid #1762c5;background:#edf4ff;padding:11px}.btn{display:inline-flex;justify-content:center;align-items:center;gap:6px;text-decoration:none;border:0;border-radius:10px;padding:11px 14px;background:#175cd3;color:white;font-weight:700;cursor:pointer}.btn.secondary{background:#edf4ff;color:#175cd3;border:1px solid #cbdcff}.row{display:flex;gap:9px;flex-wrap:wrap}.row .btn{flex:1}.field{margin:10px 0}label{display:block;font-weight:650;font-size:13px;margin-bottom:5px}input{width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:10px;font:inherit}textarea{width:100%;min-height:68px;padding:11px;border:1px solid #cbd5e1;border-radius:10px;font:inherit}.result{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}.ball{width:38px;height:38px;border-radius:50%;background:#175cd3;color:#fff;display:grid;place-items:center;font-weight:800}.entry{padding:10px 0;border-bottom:1px solid #e5eaf2}.entry:last-child{border-bottom:0}.status{display:inline-block;border-radius:99px;background:#fff0d1;color:#805600;padding:4px 8px;font-size:12px;font-weight:700}footer{font-size:12px;color:#64748b;padding:6px 2px 25px}
+@media(min-width:650px){.games{grid-template-columns:repeat(4,minmax(0,1fr))}}
+</style></head>
+<body>
+<header><div class="eyebrow">Bảng điều khiển thử nghiệm</div><h1>Vietlott AI<br>Trợ lý thống kê</h1><p>Chọn trò chơi • mở kết quả chính thức • lưu kết quả để thống kê lịch sử</p></header>
+<main>
+<div class="card">
+<h2>1. Chọn trò chơi</h2>
+<div class="games" id="games"></div>
+</div>
+<div class="card">
+<h2 id="selectedTitle">Lotto 5/35</h2>
+<p class="muted">Nguồn kiểm tra là website chính thức của Vietlott. Công cụ này chưa được kết nối tự động với dữ liệu trực tiếp.</p>
+<div class="row"><a class="btn" id="officialLink" href="https://vietlott.vn/vi/home" target="_blank" rel="noopener">Mở kết quả chính thức ↗</a><button class="btn secondary" id="installTip">Cách thêm ra màn hình chính</button></div>
+<div id="tip" class="warn" hidden style="margin-top:10px">Trong Safari: nhấn nút Chia sẻ (hình vuông có mũi tên lên) → chọn “Thêm vào MH chính” → nhấn “Thêm”. Đây chỉ là lối tắt mở trang web, không phải cửa sổ nổi đè lên Vietlott SMS.</div>
+</div>
+<div class="card">
+<h2>2. Lưu kết quả đã kiểm tra</h2>
+<div class="warn">Nhập kết quả đúng như trang chính thức hiển thị. Với các trò chơi có cấu trúc kết quả khác nhau, hãy nhập nguyên văn để tránh tính sai.</div>
+<div class="field"><label for="drawDate">Ngày quay</label><input id="drawDate" type="date"></div>
+<div class="field"><label for="drawId">Mã kỳ quay (nếu có)</label><input id="drawId" placeholder="Ví dụ: 00832"></div>
+<div class="field"><label for="drawResult">Kết quả hiển thị trên trang chính thức</label><textarea id="drawResult" placeholder="Ví dụ Lotto 5/35: 05 10 25 26 35 | 05"></textarea></div>
+<div class="row"><button class="btn" id="save">Lưu kết quả</button><button class="btn secondary" id="export">Xuất CSV</button></div>
+<p class="muted" id="message" role="status"></p>
+</div>
+<div class="card">
+<h2>3. Lịch sử đã lưu</h2><p class="muted">Chỉ gồm dữ liệu bạn đã nhập và lưu trên thiết bị này.</p><div id="history">Chưa có dữ liệu.</div>
+<div class="row" style="margin-top:12px"><button class="btn secondary" id="clear">Xóa lịch sử trò đang chọn</button></div>
+</div>
+<div class="card">
+<h2>Robot có thể và chưa thể làm gì?</h2>
+<ul>
+<li>Có thể mở liên kết nguồn chính thức, lưu kết quả, giữ lịch sử và xuất CSV.</li>
+<li>Chưa tự đọc ứng dụng Vietlott SMS, chưa tự đồng bộ kết quả mới, chưa gửi thông báo trực tiếp.</li>
+<li>Thống kê lịch sử chỉ mô tả các kỳ đã nhập; không dự đoán chắc chắn kết quả ngẫu nhiên.</li>
+</ul>
+<p class="muted">Không nhập mật khẩu, OTP hoặc thông tin thanh toán vào công cụ này.</p>
+</div>
+<footer>Phiên bản thử nghiệm chạy trong trình duyệt. Muốn đồng bộ tự động thật sự cần máy chủ và nguồn dữ liệu được phép sử dụng; không nên giả lập dữ liệu mới nhất.</footer>
+</main>
+<script>
+const games=[
+{name:"Lotto 5/35",url:"https://vietlott.vn/vi/trung-thuong/ket-qua-trung-thuong/535"},
+{name:"Mega 6/45",url:"https://vietlott.vn/vi/trung-thuong/ket-qua-trung-thuong/645"},
+{name:"Power 6/55",url:"https://vietlott.vn/vi/trung-thuong/ket-qua-trung-thuong/655"},
+{name:"Max 3D",url:"https://vietlott.vn/vi/trung-thuong/ket-qua-trung-thuong/max-3D"},
+{name:"Max 3D Pro",url:"https://vietlott.vn/vi/trung-thuong/ket-qua-trung-thuong/max-3DPro"},
+{name:"Bingo18",url:"https://vietlott.vn/vi/trung-thuong/ket-qua-trung-thuong/bingo18"},
+{name:"Keno",url:"https://vietlott.vn/vi/trung-thuong/ket-qua-trung-thuong/keno"}
+];
+let selected=0, all={};
+try{all=JSON.parse(localStorage.getItem("vl_ai_multi_history_v1")||"{}")}catch(e){all={}}
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function drawGames(){$("games").innerHTML=games.map((g,i)=>`<button class="game ${i===selected?'active':''}" data-i="${i}"><strong>${g.name}</strong><small>${(all[g.name]||[]).length} kỳ đã lưu</small></button>`).join("");document.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{selected=+b.dataset.i;render()})}
+function render(){const g=games[selected];$("selectedTitle").textContent=g.name;$("officialLink").href=g.url;drawGames();const rows=all[g.name]||[];$("history").innerHTML=rows.length?rows.slice().reverse().map(r=>`<div class="entry"><b>${esc(r.id||"Không có mã kỳ")}</b> · ${esc(r.date)}<div>${esc(r.result)}</div></div>`).join(""):"Chưa có dữ liệu cho trò chơi này."}
+$("installTip").onclick=()=>{$("tip").hidden=!$("tip").hidden};
+$("save").onclick=()=>{const date=$("drawDate").value,id=$("drawId").value.trim(),result=$("drawResult").value.trim();if(!date||!result){$("message").textContent="Bạn hãy nhập ngày quay và kết quả trước khi lưu.";return}const g=games[selected];all[g.name]=all[g.name]||[];all[g.name].push({date,id,result});try{localStorage.setItem("vl_ai_multi_history_v1",JSON.stringify(all));$("message").textContent="Đã lưu kết quả vào lịch sử của trò chơi này trên thiết bị."; $("drawId").value="";$("drawResult").value="";render()}catch(e){$("message").textContent="Không lưu được. Hãy kiểm tra dung lượng hoặc cài đặt trình duyệt."}};
+$("export").onclick=()=>{const g=games[selected],rows=[["game","date","draw_id","result"],...(all[g.name]||[]).map(r=>[g.name,r.date,r.id,r.result])];const csv="\ufeff"+rows.map(r=>r.map(x=>'"'+String(x??"").replace(/"/g,'""')+'"').join(",")).join("\r\n");const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));a.download="vietlott_"+g.name.toLowerCase().replace(/[^a-z0-9]+/g,"_")+".csv";a.click();URL.revokeObjectURL(a.href)};
+$("clear").onclick=()=>{const g=games[selected];if(confirm("Xóa lịch sử "+g.name+" đã lưu trên thiết bị?")){all[g.name]=[];localStorage.setItem("vl_ai_multi_history_v1",JSON.stringify(all));render()}};
+$("drawDate").value=new Date().toISOString().slice(0,10);render();
+</script></body></html>
